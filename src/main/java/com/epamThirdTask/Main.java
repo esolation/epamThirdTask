@@ -11,11 +11,13 @@ import java.util.concurrent.Semaphore;
 public class Main {
     public static void main(String[] args) {
         BlockingQueue<Client> clients = new LinkedBlockingDeque<>();
-        Semaphore operators = new Semaphore(2);
+        Semaphore operators = new Semaphore(2, true);
 
         for (int i = 0; i < 10 ; i++) {
             clients.add(new Client(operators,clients, new Random().nextInt(1000)+1, i));
         }
+
+
         clients.forEach(Thread::start);
     }
 }
