@@ -19,8 +19,8 @@ public class TestMain {
     @BeforeClass
     public static void  initial(){
         callCenter = new CallCenter();
-        clients = new LinkedBlockingDeque<>();
-        operators = new Semaphore(2,true);
+        clients = new ArrayBlockingQueue<>(10);
+        operators = new Semaphore(2);
         for (int i = 0; i < 10; i++) {
             clients.add(new Client(operators,i));
         }
@@ -31,9 +31,9 @@ public class TestMain {
 
     @Test
     public void shouldSetIsServiceToTrue() throws ExecutionException, InterruptedException {
-       callCenter.start(clients);
+        callCenter.start(clients);
         Thread.sleep(2000);
-       assertEquals(Client.j.get(), new AtomicInteger(10).get());
+        assertEquals(Client.j.get(), new AtomicInteger(10).get());
 
     }
 

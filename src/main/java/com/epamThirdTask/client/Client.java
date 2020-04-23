@@ -10,13 +10,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 public class Client implements Runnable {
     private Semaphore sem;
     private boolean isActive = true;
     private int id;
     private boolean isService;
     private BlockingQueue<Client> clients;
+    private AtomicInteger countOfRecall = new AtomicInteger(3);
     public volatile static AtomicInteger j = new AtomicInteger(0);
 
     private Logger log = Logger.getRootLogger();
@@ -47,44 +47,47 @@ public class Client implements Runnable {
         this.sem = sem;
         //this.clients = clients;
         this.isService = false;
-
         PropertyConfigurator.configure("src/main/resources/log4j.properties");
     }
-
     private void service()  {
         isService = true;
-
         isActive = false;
         j.incrementAndGet();
     }
 
-    private void canRecall()  {
-        if(new Random().nextBoolean()) {
+    private void canRecall() throws InterruptedException {
+        if(new Random().nextInt(3)+1 <= 1) {
             log.info("Client " + id + " will recall");
-            //set client to the end of the queue
-            clients.remove(this);
-            clients.add(this);
+            countOfRecall.decrementAndGet();
+            Thread.sleep(20);
+            log.info("Client " + id + " is reconnected");
         }
         else
-            isActive = true;
+            Thread.sleep(40);
     }
     @Override
     public  void run() {
+        log.info("Client " + id + " in queue now");
+        while (isActive) {
 
-        try {
-            while (isActive) {
-                if (clients.take() != this){
-                    canRecall();
-                }
-                sem.acquire();
+            if (sem.tryAcquire()) {
                 log.info("Client " + id + " is service now");
                 service();
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 log.info("Client " + id + " was successful serviced");
                 sem.release();
-
             }
-        } catch(InterruptedException e){
-            e.printStackTrace();
+            else if(countOfRecall.get() >=1) {
+                try {
+                    canRecall();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
