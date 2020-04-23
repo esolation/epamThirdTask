@@ -17,10 +17,13 @@ public class Client implements Runnable {
     private boolean isService;
     private BlockingQueue<Client> clients;
     private AtomicInteger countOfRecall = new AtomicInteger(3);
-    public volatile static AtomicInteger j = new AtomicInteger(0);
+    private volatile static AtomicInteger j = new AtomicInteger(0);
 
     private Logger log = Logger.getRootLogger();
 
+    public static AtomicInteger getJ() {
+        return j;
+    }
 
     public int gettingId() {
         return id;

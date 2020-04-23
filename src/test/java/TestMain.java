@@ -11,17 +11,18 @@ import static org.junit.Assert.assertEquals;
 
 
 public class TestMain {
-    static public CallCenter callCenter;
-    static BlockingQueue<Client> clients;
-    static Semaphore operators;
+    private static  CallCenter callCenter;
+    private static BlockingQueue<Client> clients;
+    private static Semaphore operators;
+    private static final int COUNT_OF_CLIENTS = 10;
 
 
     @BeforeClass
     public static void  initial(){
         callCenter = new CallCenter();
-        clients = new ArrayBlockingQueue<>(10);
+        clients = new ArrayBlockingQueue<>(COUNT_OF_CLIENTS);
         operators = new Semaphore(2);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < COUNT_OF_CLIENTS; i++) {
             clients.add(new Client(operators,i));
         }
         clients.forEach(c->{
@@ -30,10 +31,10 @@ public class TestMain {
     }
 
     @Test
-    public void shouldSetIsServiceToTrue() throws ExecutionException, InterruptedException {
+    public void shouldSetIsServiceToTrue() throws  InterruptedException {
         callCenter.start(clients);
         Thread.sleep(2000);
-        assertEquals(Client.j.get(), new AtomicInteger(10).get());
+        assertEquals(Client.getJ().get(), COUNT_OF_CLIENTS);
 
     }
 
