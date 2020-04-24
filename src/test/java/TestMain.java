@@ -25,13 +25,11 @@ public class TestMain {
         for (int i = 0; i < COUNT_OF_CLIENTS; i++) {
             clients.add(new Client(operators,i));
         }
-        clients.forEach(c->{
-            c.setClients(clients);
-        });
+
     }
 
     @Test
-    public void shouldSetIsServiceToTrue() throws  InterruptedException {
+    public void shouldCheckIfAllQueueIsServiced() throws  InterruptedException {
         callCenter.start(clients);
         Thread.sleep(2000);
         assertEquals(Client.getJ().get(), COUNT_OF_CLIENTS);

@@ -15,36 +15,13 @@ public class Client implements Runnable {
     private boolean isActive = true;
     private int id;
     private boolean isService;
-    private BlockingQueue<Client> clients;
     private AtomicInteger countOfRecall = new AtomicInteger(3);
     private volatile static AtomicInteger j = new AtomicInteger(0);
 
     private Logger log = Logger.getRootLogger();
-
     public static AtomicInteger getJ() {
         return j;
     }
-
-    public int gettingId() {
-        return id;
-    }
-
-    public boolean isServiced() {
-        return isService;
-    }
-
-    public void setServiced(boolean serviced) {
-        isService = serviced;
-    }
-
-    public BlockingQueue<Client> getClients() {
-        return clients;
-    }
-
-    public void setClients(BlockingQueue<Client> clients) {
-        this.clients = clients;
-    }
-
     public Client(Semaphore sem, int id) {
         this.id = id;
         this.sem = sem;
